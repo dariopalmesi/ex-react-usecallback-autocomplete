@@ -21,17 +21,21 @@ import { useState, useEffect } from 'react'
 
 function App() {
   const [query, setQuery] = useState('')
-  const [data, setData] = useState([])
+  const [products, setproducts] = useState([])
+  console.log(products);
 
 
 
 
   useEffect(() => {
+    if (query.trim() === '') {
+      setproducts([])
+      return
+    }
     fetch(`https://boolean-spec-frontend.vercel.app/freetestapi/products?search=${query}`)
       .then(res => res.json())
-      .then(data => setData(data))
+      .then(data => setproducts(data))
       .catch(error => console.error(error))
-
   }, [query])
 
 
@@ -48,13 +52,16 @@ function App() {
       />
 
       <div>
-        <ul>
-          {data.map && data.map((item, index) => (
-            <li key={index}>
-              {item.name}
-            </li>
-          ))}
-        </ul>
+        {products.length > 0 && (
+          <ul>
+            {products.map((product) => (
+              <li key={product.id}>
+                {product.name}
+              </li>
+            ))}
+          </ul>
+        )}
+
       </div>
 
 
