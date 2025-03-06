@@ -24,50 +24,52 @@ function App() {
   const [products, setproducts] = useState([])
   console.log(products);
 
-
-
-
-  useEffect(() => {
+  const fetchPRoducts = async (query) => {
     if (query.trim() === '') {
       setproducts([])
       return
     }
-    fetch(`https://boolean-spec-frontend.vercel.app/freetestapi/products?search=${query}`)
-      .then(res => res.json())
-      .then(data => setproducts(data))
-      .catch(error => console.error(error))
+    try {
+      const res = await fetch(`https://boolean-spec-frontend.vercel.app/freetestapi/products?search=${query}`)
+      const resProducts = await res.json()
+      setproducts(resProducts)
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+
+  useEffect(() => {
+    fetchPRoducts(query)
   }, [query])
-
-
-
-
 
   return (
     <>
-      <input
-        type="text"
-        placeholder='cerca...'
-        value={query}
-        onChange={e => setQuery(e.target.value)}
-      />
+      <div className="container">
+        <h1>Cerca un prodotto</h1>
 
-      <div>
-        {products.length > 0 && (
-          <ul>
-            {products.map((product) => (
-              <li key={product.id}>
-                {product.name}
-              </li>
-            ))}
-          </ul>
-        )}
+        <input
+          type="text"
+          placeholder="Cerca..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="search-input"
+        />
 
+        <div className="results">
+          {products.length > 0 ? (
+            <ul>
+              {products.map((product) => (
+                <li key={product.id} className="product-item">
+                  {product.name}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="no-results">Nessun prodotto trovato</p>
+          )}
+        </div>
       </div>
-
-
-
-
-
     </>
   )
 }
