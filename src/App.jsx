@@ -10,21 +10,29 @@
 // Se l'utente cancella il testo, la tendina scompare.
 
 
+function debounce(callback, delay) {
+  let timer
+  return (value) => {
+    clearTimeout(timer)
+    timer = setTimeout(() => {
+      callback(value)
+    }, delay)
+  }
+}
 
 
 
 
-
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 
 
 function App() {
   const [query, setQuery] = useState('')
   const [products, setproducts] = useState([])
-  console.log(products);
 
-  const fetchPRoducts = async (query) => {
+
+  const fetchProducts = useCallback(debounce(async (query) => {
     if (query.trim() === '') {
       setproducts([])
       return
@@ -33,14 +41,16 @@ function App() {
       const res = await fetch(`https://boolean-spec-frontend.vercel.app/freetestapi/products?search=${query}`)
       const resProducts = await res.json()
       setproducts(resProducts)
+      console.log('API:', query);
+
     } catch (error) {
       console.error(error);
     }
-  }
+  }, 300), [])
 
 
   useEffect(() => {
-    fetchPRoducts(query)
+    fetchProducts(query)
   }, [query])
 
   return (
